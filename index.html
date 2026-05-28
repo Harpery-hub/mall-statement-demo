@@ -3,1009 +3,557 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>商城对账单模拟小程序</title>
+  <title>商城小程序 - 我的订单</title>
   <style>
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-      -webkit-tap-highlight-color: transparent;
-    }
-
+    * { box-sizing: border-box; margin: 0; padding: 0; }
     body {
       min-height: 100vh;
-      background: #e8e8ec;
-      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "PingFang SC", "Microsoft YaHei", sans-serif;
-      color: #101010;
       display: flex;
       justify-content: center;
       align-items: center;
-      padding: 24px 0;
+      background: #d8d8da;
+      font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif;
+      color: #111;
+      padding: 20px 0;
     }
 
     .phone {
       width: 390px;
       height: 844px;
-      background: #f7f7f7;
+      border-radius: 30px;
       overflow: hidden;
+      background: #efeff1;
+      box-shadow: 0 24px 64px rgba(0, 0, 0, 0.2);
       position: relative;
-      border-radius: 28px;
-      box-shadow: 0 18px 60px rgba(0, 0, 0, 0.18);
     }
 
-    .status-bar {
-      height: 48px;
+    .status {
+      height: 46px;
+      padding: 0 18px;
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding: 0 22px;
-      font-weight: 800;
+      font-size: 15px;
+      font-weight: 700;
+      background: #efeff1;
+    }
+
+    .topbar {
+      height: 44px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
       font-size: 17px;
-      background: #f7f7f7;
-    }
-
-    .status-icons {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      font-size: 13px;
-    }
-
-    .signal {
-      display: grid;
-      grid-template-columns: repeat(4, 4px);
-      align-items: end;
-      gap: 2px;
-      height: 14px;
-    }
-
-    .signal span {
-      display: block;
-      width: 4px;
-      border-radius: 3px;
-      background: #111;
-    }
-
-    .signal span:nth-child(1) { height: 6px; }
-    .signal span:nth-child(2) { height: 9px; }
-    .signal span:nth-child(3) { height: 12px; }
-    .signal span:nth-child(4) { height: 14px; background: #ccc; }
-
-    .wifi {
-      width: 18px;
-      height: 14px;
-      position: relative;
-    }
-
-    .wifi::before,
-    .wifi::after {
-      content: "";
-      position: absolute;
-      left: 50%;
-      transform: translateX(-50%);
-      border: 3px solid #111;
-      border-bottom: 0;
-      border-radius: 24px 24px 0 0;
-    }
-
-    .wifi::before { width: 20px; height: 10px; top: 0; }
-    .wifi::after { width: 10px; height: 5px; top: 6px; }
-
-    .battery {
-      background: #111;
-      color: white;
-      border-radius: 7px;
-      padding: 2px 6px;
-      font-size: 13px;
-      line-height: 18px;
-    }
-
-    .nav {
-      height: 50px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 0 20px;
-      background: #f7f7f7;
-    }
-
-    .title {
-      font-size: 18px;
       font-weight: 800;
-      transform: translateX(18px);
+      position: relative;
+      background: #efeff1;
     }
 
-    .icon-btn {
+    .back {
+      position: absolute;
+      left: 12px;
       border: 0;
       background: transparent;
       font-size: 24px;
-      line-height: 1;
-      cursor: pointer;
       color: #111;
+      display: none;
     }
 
-    .nav-right {
+    .content {
+      height: calc(100% - 46px - 44px - 78px);
+      overflow-y: auto;
+      padding: 10px;
+      scrollbar-width: none;
+    }
+    .content::-webkit-scrollbar { display: none; }
+
+    .card {
+      background: #fff;
+      border-radius: 20px;
+      margin-bottom: 12px;
+      overflow: hidden;
+    }
+
+    .profile {
+      background: #f17660;
+      color: #fff;
+      padding: 18px;
+      height: 170px;
       display: flex;
       align-items: center;
       gap: 16px;
     }
 
-    .toolbar {
-      height: 54px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 0 14px;
-      background: #f7f7f7;
-      font-size: 15px;
-      font-weight: 700;
-    }
-
-    .toolbar-left {
-      display: flex;
-      align-items: center;
-      gap: 14px;
-    }
-
-    .select-text::after {
-      content: "";
-      display: inline-block;
-      margin-left: 5px;
-      border-left: 5px solid transparent;
-      border-right: 5px solid transparent;
-      border-top: 6px solid #111;
-      transform: translateY(-2px);
-    }
-
-    .content {
-      height: calc(100% - 48px - 50px - 54px - 76px);
-      overflow-y: auto;
-      padding: 0 14px 32px;
-      scrollbar-width: none;
-    }
-
-    .content::-webkit-scrollbar { display: none; }
-
-    .notice {
-      min-height: 44px;
+    .avatar {
+      width: 86px;
+      height: 86px;
       border-radius: 14px;
-      background: #fff;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 0 14px;
-      font-size: 14px;
-      margin-bottom: 14px;
-      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.03);
-    }
-
-    .summary-card {
-      border-radius: 20px;
-      padding: 20px 18px 18px;
-      background:
-        radial-gradient(circle at 18% 12%, rgba(255, 204, 128, 0.38), transparent 30%),
-        radial-gradient(circle at 88% 45%, rgba(129, 212, 250, 0.34), transparent 34%),
-        linear-gradient(135deg, #fff 0%, #fff8ed 45%, #f0fbff 100%);
-      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
-      margin-bottom: 14px;
-    }
-
-    .summary-head {
-      display: flex;
-      align-items: flex-start;
-      justify-content: space-between;
-      margin-bottom: 18px;
-    }
-
-    .shop-name {
-      font-size: 15px;
-      font-weight: 800;
-      color: #444;
-      margin-bottom: 6px;
-    }
-
-    .month-title {
-      display: flex;
-      align-items: baseline;
-      gap: 4px;
-      font-size: 38px;
-      font-weight: 950;
-      letter-spacing: -1px;
-    }
-
-    .month-title span {
-      font-size: 20px;
-      font-weight: 850;
-    }
-
-    .withdraw-btn {
-      background: #050505;
-      color: #fff;
-      border: 0;
-      border-radius: 18px;
-      padding: 7px 14px;
-      font-size: 14px;
-      font-weight: 800;
-      cursor: pointer;
-    }
-
-    .settle-main {
-      margin-bottom: 16px;
-    }
-
-    .settle-label {
-      color: #666;
-      font-size: 13px;
-      margin-bottom: 6px;
-    }
-
-    .settle-amount {
-      font-size: 34px;
-      line-height: 1.1;
-      font-weight: 950;
-      letter-spacing: -0.5px;
-    }
-
-    .money-row {
-      display: grid;
-      grid-template-columns: 1fr 1fr 1fr;
-      gap: 8px;
-      margin-bottom: 14px;
-    }
-
-    .money-box {
-      background: rgba(255, 255, 255, 0.48);
-      border-radius: 12px;
-      padding: 10px 8px;
-    }
-
-    .money-value {
-      font-size: 15px;
-      font-weight: 900;
-      white-space: nowrap;
-    }
-
-    .money-label {
-      color: #666;
-      font-size: 12px;
-      margin-top: 6px;
-    }
-
-    .summary-desc {
-      border-top: 1px solid rgba(255, 255, 255, 0.7);
-      background: rgba(255, 255, 255, 0.45);
-      border-radius: 10px;
-      padding: 12px;
-      color: #333;
-      font-size: 13px;
-      line-height: 1.5;
-    }
-
-    .status-cards {
-      display: grid;
-      grid-template-columns: 1fr 1fr 1fr;
-      gap: 8px;
-      margin-bottom: 14px;
-    }
-
-    .status-card {
-      background: #fff;
-      border-radius: 14px;
-      padding: 12px 10px;
-      box-shadow: 0 6px 18px rgba(0, 0, 0, 0.03);
-    }
-
-    .status-number {
-      font-size: 17px;
-      font-weight: 950;
-      margin-bottom: 5px;
-    }
-
-    .status-text {
-      font-size: 12px;
-      color: #777;
-    }
-
-    .tabs {
-      position: sticky;
-      top: 0;
-      z-index: 2;
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 6px;
-      background: #f7f7f7;
-      padding: 4px 0 10px;
-    }
-
-    .tab {
-      height: 34px;
-      border: 0;
-      border-radius: 17px;
-      background: #fff;
-      color: #666;
-      font-size: 13px;
-      font-weight: 800;
-      cursor: pointer;
-    }
-
-    .tab.active {
-      background: #111;
-      color: #fff;
-    }
-
-    .search-panel {
-      display: none;
-      gap: 8px;
-      margin: 0 0 12px;
-    }
-
-    .search-panel.active {
-      display: flex;
-    }
-
-    .search-panel input,
-    .search-panel select {
-      border: 0;
-      outline: none;
-      background: white;
-      border-radius: 12px;
-      height: 40px;
-      padding: 0 12px;
-      font-size: 14px;
-      min-width: 0;
-      box-shadow: 0 4px 14px rgba(0, 0, 0, 0.03);
-    }
-
-    .search-panel input { flex: 1; }
-    .search-panel select { width: 96px; }
-
-    .day-label {
-      display: inline-flex;
-      align-items: center;
-      height: 28px;
-      padding: 0 12px;
-      border-radius: 9px;
-      background: #eeeeef;
-      font-size: 14px;
-      font-weight: 800;
-      margin: 8px 0 8px;
-    }
-
-    .statement-item {
-      background: #fff;
-      border-radius: 16px;
-      padding: 14px;
-      margin-bottom: 10px;
-      box-shadow: 0 6px 18px rgba(0, 0, 0, 0.03);
-    }
-
-    .item-top {
-      display: flex;
-      align-items: flex-start;
-      justify-content: space-between;
-      gap: 12px;
-      margin-bottom: 10px;
-    }
-
-    .item-title {
-      font-size: 16px;
-      font-weight: 900;
-      margin-bottom: 5px;
-    }
-
-    .item-sub {
-      color: #8c8c8c;
-      font-size: 12px;
-      line-height: 1.5;
-    }
-
-    .amount-wrap {
-      text-align: right;
-      flex-shrink: 0;
-    }
-
-    .amount {
-      font-size: 18px;
-      font-weight: 950;
-      color: #111;
-      margin-bottom: 6px;
-      white-space: nowrap;
-    }
-
-    .amount.minus {
-      color: #999;
-    }
-
-    .tag {
-      display: inline-flex;
-      align-items: center;
-      height: 20px;
-      border-radius: 10px;
-      padding: 0 7px;
-      font-size: 11px;
-      font-weight: 700;
-      white-space: nowrap;
-    }
-
-    .tag.pending {
-      border: 1px solid #ff8b26;
-      color: #ff8b26;
-      background: #fffaf4;
-    }
-
-    .tag.done {
-      border: 1px solid #1f9d55;
-      color: #1f9d55;
-      background: #f2fff7;
-    }
-
-    .tag.refund {
-      border: 1px solid #ff5b5f;
-      color: #ff5b5f;
-      background: #fff4f4;
-    }
-
-    .item-bottom {
-      display: grid;
-      grid-template-columns: 1fr 1fr 1fr;
-      gap: 6px;
-      padding-top: 10px;
-      border-top: 1px solid #f1f1f1;
-      color: #777;
-      font-size: 12px;
-    }
-
-    .item-bottom strong {
-      display: block;
-      color: #222;
-      font-size: 13px;
-      margin-bottom: 3px;
-    }
-
-    .empty {
-      display: none;
-      text-align: center;
-      color: #999;
-      padding: 40px 0;
-      font-size: 14px;
-    }
-
-    .fab {
-      position: absolute;
-      right: 20px;
-      bottom: 88px;
-      width: 58px;
-      height: 58px;
-      border-radius: 50%;
-      border: 0;
-      background: #111;
-      color: #fff;
-      box-shadow: 0 10px 28px rgba(0, 0, 0, 0.18);
-      font-size: 13px;
-      font-weight: 900;
-      cursor: pointer;
-      z-index: 3;
-    }
-
-    .tabbar {
-      height: 76px;
-      position: absolute;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      background: rgba(255, 255, 255, 0.94);
-      border-top: 1px solid rgba(0, 0, 0, 0.04);
-      display: grid;
-      grid-template-columns: 1fr 1fr 1fr;
-      align-items: center;
-      z-index: 2;
-    }
-
-    .bottom-tab {
-      text-align: center;
-      color: #9c9c9c;
-      font-size: 12px;
-      position: relative;
-    }
-
-    .bottom-icon {
-      width: 42px;
-      height: 42px;
-      border-radius: 50%;
+      background: #f2f2f2;
       display: flex;
       align-items: center;
       justify-content: center;
-      margin: 0 auto 2px;
-      font-size: 19px;
-      font-weight: 900;
+      font-size: 40px;
     }
 
-    .bottom-tab.active {
+    .profile h2 {
+      font-size: 37px;
+      margin-bottom: 5px;
+      font-weight: 900;
+      line-height: 1;
+    }
+
+    .profile p {
+      font-size: 15px;
+      opacity: 0.95;
+      font-weight: 700;
+    }
+
+    .order-nav {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      padding: 16px 8px 14px;
+      gap: 6px;
+      text-align: center;
+      background: #fff;
+    }
+
+    .order-shortcut {
+      border: 0;
+      background: transparent;
+      cursor: pointer;
+      color: #6b7280;
+      position: relative;
+      padding: 6px 2px;
+    }
+
+    .badge {
+      position: absolute;
+      right: 18px;
+      top: 4px;
+      min-width: 18px;
+      height: 18px;
+      border-radius: 9px;
+      background: #ef4444;
+      color: #fff;
+      font-size: 11px;
+      line-height: 18px;
+      font-weight: 800;
+      padding: 0 5px;
+    }
+
+    .ico {
+      font-size: 28px;
+      margin-bottom: 8px;
+      display: block;
+      color: #111;
+    }
+
+    .menu-item {
+      height: 90px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 22px;
+      font-size: 38px;
+      font-weight: 700;
+      background: #fff;
+      border-radius: 20px;
+      margin-bottom: 10px;
+    }
+
+    .menu-item span:last-child { color: #111; }
+
+    .list-head {
+      background: #fff;
+      border-radius: 16px;
+      padding: 12px;
+      margin-bottom: 10px;
+      display: flex;
+      gap: 8px;
+    }
+
+    .pill {
+      border: 0;
+      height: 30px;
+      border-radius: 15px;
+      padding: 0 12px;
+      font-size: 13px;
+      background: #f1f3f7;
+      color: #606a78;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .pill.active {
+      background: #111;
+      color: #fff;
+    }
+
+    .order-card {
+      background: #fff;
+      border-radius: 18px;
+      padding: 12px;
+      margin-bottom: 10px;
+      cursor: pointer;
+      border: 1px solid #eceef2;
+    }
+
+    .order-top {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 8px;
+      font-size: 12px;
+      color: #6b7280;
+    }
+
+    .order-body {
+      display: grid;
+      grid-template-columns: 86px 1fr;
+      gap: 10px;
+      margin-bottom: 8px;
+    }
+
+    .thumb {
+      width: 86px;
+      height: 86px;
+      border-radius: 12px;
+      background: linear-gradient(145deg, #f6f6f6, #e2e4e9);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 30px;
+    }
+
+    .order-title {
+      font-size: 15px;
+      font-weight: 800;
+      line-height: 1.4;
+      margin-bottom: 5px;
+    }
+
+    .order-sub {
+      font-size: 12px;
+      color: #7b8493;
+      line-height: 1.45;
+      margin-bottom: 6px;
+    }
+
+    .price {
+      font-size: 35px;
       color: #111;
       font-weight: 900;
     }
 
-    .bottom-tab.active .bottom-icon {
-      background: #050505;
-      color: white;
+    .state {
+      display: inline-flex;
+      align-items: center;
+      border-radius: 12px;
+      border: 1px solid #d5dae3;
+      background: #f3f5f8;
+      color: #606c7d;
+      font-size: 11px;
+      height: 24px;
+      padding: 0 10px;
+      font-weight: 700;
     }
 
-    .drawer-mask {
-      position: absolute;
-      inset: 0;
-      background: rgba(0, 0, 0, 0.24);
-      opacity: 0;
-      pointer-events: none;
-      transition: 0.2s;
-      z-index: 10;
-    }
-
-    .drawer-mask.show {
-      opacity: 1;
-      pointer-events: auto;
-    }
-
-    .drawer {
-      position: absolute;
-      left: 0;
-      right: 0;
-      bottom: -420px;
+    .detail-card {
       background: #fff;
-      border-radius: 24px 24px 0 0;
-      padding: 20px;
-      transition: 0.25s ease;
-      z-index: 11;
+      border-radius: 18px;
+      padding: 14px;
+      margin-bottom: 10px;
     }
 
-    .drawer.show {
-      bottom: 0;
+    .detail-title {
+      font-size: 28px;
+      font-weight: 900;
+      margin-bottom: 10px;
     }
 
-    .drawer-title {
-      font-size: 18px;
-      font-weight: 950;
+    .kv {
+      display: grid;
+      grid-template-columns: 88px 1fr;
+      gap: 8px;
+      font-size: 13px;
       margin-bottom: 8px;
     }
 
-    .drawer-tip {
-      color: #777;
-      font-size: 13px;
-      margin-bottom: 16px;
-      line-height: 1.5;
+    .kv .k { color: #7b8493; }
+    .kv .v { font-weight: 700; word-break: break-all; }
+
+    .divider {
+      border-top: 1px dashed #e4e7ed;
+      margin: 10px 0;
     }
 
-    .form-grid {
+    .tabbar {
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      height: 78px;
+      background: rgba(255, 255, 255, 0.95);
+      border-top: 1px solid #eceff4;
       display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 10px;
+      grid-template-columns: 1fr 1fr 1fr;
+      align-items: center;
+      text-align: center;
     }
 
-    .form-grid input,
-    .form-grid select {
-      width: 100%;
-      height: 44px;
-      border: 1px solid #eee;
-      border-radius: 12px;
-      outline: none;
-      padding: 0 12px;
-      font-size: 14px;
-      background: #fafafa;
-    }
-
-    .full { grid-column: 1 / -1; }
-
-    .primary-btn {
-      width: 100%;
-      height: 46px;
-      border-radius: 16px;
+    .tab-btn {
       border: 0;
-      margin-top: 16px;
-      background: #111;
-      color: white;
-      font-size: 16px;
-      font-weight: 900;
-      cursor: pointer;
+      background: transparent;
+      color: #8b919c;
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    .tab-btn span {
+      display: block;
+      font-size: 21px;
+      margin-bottom: 2px;
+    }
+
+    .tab-btn.active { color: #e05f53; }
+    .empty-tip {
+      text-align: center;
+      color: #8891a0;
+      padding: 26px 0;
+      font-size: 13px;
     }
   </style>
 </head>
 <body>
   <main class="phone">
-    <header class="status-bar">
-      <div>19:41</div>
-      <div class="status-icons">
-        <div class="signal"><span></span><span></span><span></span><span></span></div>
-        <div class="wifi"></div>
-        <div class="battery">92</div>
-      </div>
-    </header>
-
-    <section class="nav">
-      <button class="icon-btn" aria-label="返回">‹</button>
-      <div class="title">店铺对账</div>
-      <div class="nav-right">
-        <button class="icon-btn" id="toggleSearch" aria-label="搜索">⌕</button>
-        <button class="icon-btn" aria-label="更多">···</button>
-      </div>
-    </section>
-
-    <section class="toolbar">
-      <div class="toolbar-left">
-        <div class="select-text">2026.05</div>
-        <div class="select-text">全部店铺</div>
-        <div class="select-text">全部状态</div>
-      </div>
-      <div id="filterBtn">筛选</div>
-    </section>
-
-    <section class="content">
-      <div class="notice">
-        <span>5月商城账单已生成，待结算金额可申请提现</span>
-        <span style="color:#bbb;font-size:24px;">›</span>
-      </div>
-
-      <section class="summary-card">
-        <div class="summary-head">
-          <div>
-            <div class="shop-name">旗舰店 · 月度对账单</div>
-            <div class="month-title">5<span>月</span></div>
-          </div>
-          <button class="withdraw-btn" id="withdrawTopBtn">提现</button>
-        </div>
-
-        <div class="settle-main">
-          <div class="settle-label">本期可结算金额</div>
-          <div class="settle-amount" id="settleValue">¥ 0.00</div>
-        </div>
-
-        <div class="money-row">
-          <div class="money-box">
-            <div class="money-value" id="salesValue">¥ 0.00</div>
-            <div class="money-label">订单收入</div>
-          </div>
-          <div class="money-box">
-            <div class="money-value" id="refundValue">¥ 0.00</div>
-            <div class="money-label">退款售后</div>
-          </div>
-          <div class="money-box">
-            <div class="money-value" id="feeValue">¥ 0.00</div>
-            <div class="money-label">平台扣费</div>
-          </div>
-        </div>
-
-        <div class="summary-desc">结算公式：订单实收 - 退款售后 - 平台服务费 - 运费险/佣金 = 可提现金额</div>
-      </section>
-
-      <section class="status-cards">
-        <div class="status-card">
-          <div class="status-number" id="pendingCount">0</div>
-          <div class="status-text">待结算订单</div>
-        </div>
-        <div class="status-card">
-          <div class="status-number" id="doneCount">0</div>
-          <div class="status-text">已结算流水</div>
-        </div>
-        <div class="status-card">
-          <div class="status-number" id="withdrawCount">0</div>
-          <div class="status-text">提现记录</div>
-        </div>
-      </section>
-
-      <div class="tabs">
-        <button class="tab active" data-type="ALL">全部</button>
-        <button class="tab" data-type="SALE">订单</button>
-        <button class="tab" data-type="REFUND">退款</button>
-        <button class="tab" data-type="FEE">扣费</button>
-      </div>
-
-      <div class="search-panel" id="searchPanel">
-        <input id="keywordInput" placeholder="搜索订单号 / 商品 / 买家" />
-        <select id="statusSelect">
-          <option value="ALL">全部</option>
-          <option value="PENDING">待结算</option>
-          <option value="SETTLED">已结算</option>
-          <option value="WITHDRAWN">已提现</option>
-        </select>
-      </div>
-
-      <section id="statementList"></section>
-      <div class="empty" id="emptyState">暂无匹配的对账流水</div>
-    </section>
-
-    <button class="fab" id="openDrawer">提现</button>
+    <div class="status"><span>19:41</span><span>5G 92%</span></div>
+    <div class="topbar">
+      <button id="backBtn" class="back">‹</button>
+      <span id="topTitle">我的</span>
+    </div>
+    <section id="content" class="content"></section>
 
     <footer class="tabbar">
-      <div class="bottom-tab active">
-        <div class="bottom-icon">账</div>
-        <div>对账</div>
-      </div>
-      <div class="bottom-tab">
-        <div class="bottom-icon">单</div>
-        <div>订单</div>
-      </div>
-      <div class="bottom-tab">
-        <div class="bottom-icon">¥</div>
-        <div>资金</div>
-      </div>
+      <button class="tab-btn" data-tab="today"><span>📄</span>今日</button>
+      <button class="tab-btn" data-tab="shop"><span>🛍️</span>商店</button>
+      <button class="tab-btn active" data-tab="mine"><span>👤</span>我的</button>
     </footer>
-
-    <div class="drawer-mask" id="drawerMask"></div>
-    <section class="drawer" id="drawer">
-      <div class="drawer-title">申请提现</div>
-      <div class="drawer-tip">模拟商城商家后台的提现操作：选择到账账户，填写提现金额，提交后会生成一条提现流水。</div>
-      <div class="form-grid">
-        <select id="withdrawAccount" class="full">
-          <option value="招商银行 尾号 7613">招商银行 尾号 7613</option>
-          <option value="支付宝商家余额">支付宝商家余额</option>
-          <option value="微信商户零钱">微信商户零钱</option>
-        </select>
-        <input id="withdrawAmount" type="number" placeholder="提现金额" />
-        <select id="withdrawMethod">
-          <option value="普通提现">普通提现</option>
-          <option value="快速提现">快速提现</option>
-        </select>
-        <input class="full" id="withdrawRemark" placeholder="备注，例如：5月货款提现" />
-      </div>
-      <button class="primary-btn" id="saveWithdraw">提交提现申请</button>
-    </section>
   </main>
 
   <script>
-    const statements = [
+    const orders = [
       {
-        day: "今天",
-        type: "SALE",
-        title: "订单收入",
-        orderNo: "SO202605280001",
-        product: "夏季短袖T恤 · 黑色 XL",
-        buyer: "买家_程驰",
-        time: "17:26",
-        amount: 328.00,
-        commission: 16.40,
-        freight: 8.00,
-        status: "PENDING",
-        statusText: "待结算"
+        id: "168514551556394006",
+        title: "预售 | Potato Card 电子拍立得土豆片 1 号机",
+        desc: "量产计划推进中，按订单顺序陆续发货。",
+        price: 399,
+        qty: 1,
+        status: "待发货",
+        payerName: "程驰",
+        payerCard: "招商银行 尾号 4932",
+        receiver: "大*",
+        phone: "150****4441",
+        address: "山西省临汾市****元803",
+        payTime: "05/28 20:41",
+        payNo: "PAY202605282041556394006"
       },
       {
-        day: "今天",
-        type: "SALE",
-        title: "订单收入",
-        orderNo: "SO202605280002",
-        product: "轻奢保温杯 480ml",
-        buyer: "买家_小林",
-        time: "15:18",
-        amount: 129.00,
-        commission: 6.45,
-        freight: 0,
-        status: "PENDING",
-        statusText: "待结算"
+        id: "168514551556394007",
+        title: "疯狂星期四 | 小方块 45W 氮化镓折叠快充充电头",
+        desc: "小巧便携，支持 PD 快充协议。",
+        price: 19.9,
+        qty: 2,
+        status: "待收货",
+        payerName: "林舒",
+        payerCard: "中国银行 尾号 2276",
+        receiver: "林舒",
+        phone: "136****7812",
+        address: "浙江省杭州市余杭区文一西路 969号",
+        payTime: "05/27 10:18",
+        payNo: "PAY202605271018556394007"
       },
       {
-        day: "今天",
-        type: "FEE",
-        title: "平台服务费",
-        orderNo: "FEE202605280001",
-        product: "交易技术服务费",
-        buyer: "商城平台",
-        time: "13:45",
-        amount: -22.85,
-        commission: 0,
-        freight: 0,
-        status: "SETTLED",
-        statusText: "已结算"
-      },
-      {
-        day: "昨天",
-        type: "REFUND",
-        title: "退款售后",
-        orderNo: "RF202605270003",
-        product: "无线蓝牙耳机 Pro",
-        buyer: "买家_安安",
-        time: "21:35",
-        amount: -199.00,
-        commission: 0,
-        freight: 0,
-        status: "SETTLED",
-        statusText: "已结算"
-      },
-      {
-        day: "昨天",
-        type: "SALE",
-        title: "订单收入",
-        orderNo: "SO202605270009",
-        product: "家用香薰套装",
-        buyer: "买家_阿南",
-        time: "20:42",
-        amount: 268.00,
-        commission: 13.40,
-        freight: 10.00,
-        status: "SETTLED",
-        statusText: "已结算"
-      },
-      {
-        day: "05-26",
-        type: "SALE",
-        title: "订单收入",
-        orderNo: "SO202605260021",
-        product: "北欧餐具六件套",
-        buyer: "买家_盒马",
-        time: "19:44",
-        amount: 499.00,
-        commission: 24.95,
-        freight: 12.00,
-        status: "SETTLED",
-        statusText: "已结算"
-      },
-      {
-        day: "05-25",
-        type: "WITHDRAW",
-        title: "提现到账",
-        orderNo: "WD202605250001",
-        product: "提现至招商银行 尾号7613",
-        buyer: "商家账户",
-        time: "09:00",
-        amount: -30000.00,
-        commission: 0,
-        freight: 0,
-        status: "WITHDRAWN",
-        statusText: "已提现"
+        id: "168514551556394008",
+        title: "预售 | 原创 AI 电子助理随身卡",
+        desc: "支持离线指令，预售中。",
+        price: 399,
+        qty: 1,
+        status: "退款/售后",
+        payerName: "安安",
+        payerCard: "建设银行 尾号 9021",
+        receiver: "安安",
+        phone: "139****4408",
+        address: "江苏省南京市鼓楼区中山路 188号",
+        payTime: "05/25 18:10",
+        payNo: "PAY202605251810556394008"
       }
     ];
 
-    let activeType = "ALL";
+    let page = "mine";
+    let listFilter = "全部订单";
+    let currentOrder = null;
 
-    const statementList = document.getElementById("statementList");
-    const emptyState = document.getElementById("emptyState");
-    const keywordInput = document.getElementById("keywordInput");
-    const statusSelect = document.getElementById("statusSelect");
-    const searchPanel = document.getElementById("searchPanel");
-    const drawer = document.getElementById("drawer");
-    const drawerMask = document.getElementById("drawerMask");
+    const topTitle = document.getElementById("topTitle");
+    const content = document.getElementById("content");
+    const backBtn = document.getElementById("backBtn");
 
-    function money(value) {
-      return `¥ ${Math.abs(value).toLocaleString("zh-CN", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+    function money(v) {
+      return `¥${Number(v).toLocaleString("zh-CN", { minimumFractionDigits: Number(v) % 1 ? 1 : 0, maximumFractionDigits: 2 })}`;
     }
 
-    function signedMoney(value) {
-      const symbol = value < 0 ? "-¥" : "+¥";
-      return `${symbol}${Math.abs(value).toLocaleString("zh-CN", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
-    }
+    function renderMine() {
+      const pendingShip = orders.filter(o => o.status === "待发货").length;
+      const pendingReceive = orders.filter(o => o.status === "待收货").length;
+      const refunding = orders.filter(o => o.status === "退款/售后").length;
 
-    function getTagClass(item) {
-      if (item.type === "REFUND") return "refund";
-      if (item.status === "PENDING") return "pending";
-      return "done";
-    }
-
-    function updateSummary(data) {
-      const sales = statements.filter(item => item.type === "SALE").reduce((sum, item) => sum + item.amount, 0);
-      const refunds = Math.abs(statements.filter(item => item.type === "REFUND").reduce((sum, item) => sum + item.amount, 0));
-      const feeByLine = Math.abs(statements.filter(item => item.type === "FEE").reduce((sum, item) => sum + item.amount, 0));
-      const saleFees = statements.filter(item => item.type === "SALE").reduce((sum, item) => sum + item.commission + item.freight, 0);
-      const fee = feeByLine + saleFees;
-      const settle = sales - refunds - fee;
-
-      document.getElementById("salesValue").textContent = money(sales);
-      document.getElementById("refundValue").textContent = money(refunds);
-      document.getElementById("feeValue").textContent = money(fee);
-      document.getElementById("settleValue").textContent = money(settle);
-
-      document.getElementById("pendingCount").textContent = statements.filter(item => item.status === "PENDING").length;
-      document.getElementById("doneCount").textContent = statements.filter(item => item.status === "SETTLED").length;
-      document.getElementById("withdrawCount").textContent = statements.filter(item => item.type === "WITHDRAW").length;
-    }
-
-    function filterStatements() {
-      const keyword = keywordInput.value.trim().toLowerCase();
-      const status = statusSelect.value;
-
-      return statements.filter(item => {
-        const matchType = activeType === "ALL" || item.type === activeType;
-        const matchStatus = status === "ALL" || item.status === status;
-        const text = `${item.title} ${item.orderNo} ${item.product} ${item.buyer} ${item.time} ${item.amount}`.toLowerCase();
-        const matchKeyword = !keyword || text.includes(keyword);
-        return matchType && matchStatus && matchKeyword;
-      });
-    }
-
-    function render() {
-      const data = filterStatements();
-      updateSummary(data);
-      statementList.innerHTML = "";
-      emptyState.style.display = data.length ? "none" : "block";
-
-      let currentDay = "";
-      data.forEach(item => {
-        if (item.day !== currentDay) {
-          currentDay = item.day;
-          const day = document.createElement("div");
-          day.className = "day-label";
-          day.textContent = currentDay;
-          statementList.appendChild(day);
-        }
-
-        const row = document.createElement("article");
-        row.className = "statement-item";
-        row.innerHTML = `
-          <div class="item-top">
+      content.innerHTML = `
+        <section class="card">
+          <div class="profile">
+            <div class="avatar">🧍</div>
             <div>
-              <div class="item-title">${item.title}</div>
-              <div class="item-sub">${item.product}</div>
-              <div class="item-sub">${item.orderNo} · ${item.time}</div>
-            </div>
-            <div class="amount-wrap">
-              <div class="amount ${item.amount < 0 ? "minus" : ""}">${signedMoney(item.amount)}</div>
-              <span class="tag ${getTagClass(item)}">${item.statusText}</span>
+              <h2>我的</h2>
+              <p>还未登录的新朋友</p>
             </div>
           </div>
-          <div class="item-bottom">
-            <div><strong>${item.buyer}</strong>买家/账户</div>
-            <div><strong>${money(item.commission)}</strong>佣金</div>
-            <div><strong>${money(item.freight)}</strong>运费/险</div>
+          <div class="order-nav">
+            <button class="order-shortcut" data-jump="全部订单"><span class="ico">📋</span>全部订单</button>
+            <button class="order-shortcut" data-jump="购物袋"><span class="ico">🛒</span>购物袋</button>
+            <button class="order-shortcut" data-jump="待收货"><span class="ico">📦</span>待收货${pendingReceive ? `<span class="badge">${pendingReceive}</span>` : ""}</button>
+            <button class="order-shortcut" data-jump="退款/售后"><span class="ico">🔎</span>退款/售后${refunding ? `<span class="badge">${refunding}</span>` : ""}</button>
           </div>
-        `;
-        statementList.appendChild(row);
+        </section>
+
+        <div class="menu-item"><span>我的优惠券</span><span>›</span></div>
+        <div class="menu-item"><span>我的地址</span><span>›</span></div>
+        <div class="menu-item"><span>联系客服</span><span>›</span></div>
+        <div class="menu-item"><span>投诉</span><span>›</span></div>
+      `;
+
+      content.querySelectorAll(".order-shortcut").forEach(btn => {
+        btn.addEventListener("click", () => {
+          const jump = btn.dataset.jump;
+          if (jump === "全部订单" || jump === "待收货" || jump === "退款/售后") {
+            page = "orders";
+            listFilter = jump;
+            render();
+          }
+        });
       });
     }
 
-    function toggleDrawer(show) {
-      drawer.classList.toggle("show", show);
-      drawerMask.classList.toggle("show", show);
+    function filteredOrders() {
+      if (listFilter === "全部订单") return orders;
+      if (listFilter === "待收货") return orders.filter(o => o.status === "待收货");
+      if (listFilter === "退款/售后") return orders.filter(o => o.status === "退款/售后");
+      return orders;
     }
 
-    document.getElementById("toggleSearch").addEventListener("click", () => {
-      searchPanel.classList.toggle("active");
-    });
+    function renderOrders() {
+      const list = filteredOrders();
+      const pills = ["全部订单", "待收货", "退款/售后"];
 
-    document.getElementById("filterBtn").addEventListener("click", () => {
-      searchPanel.classList.add("active");
-      statusSelect.focus();
-    });
+      content.innerHTML = `
+        <section class="list-head">
+          ${pills.map(p => `<button class="pill ${listFilter === p ? "active" : ""}" data-filter="${p}">${p}</button>`).join("")}
+        </section>
+        <section id="orderList"></section>
+      `;
 
-    document.querySelectorAll(".tab").forEach(tab => {
-      tab.addEventListener("click", () => {
-        document.querySelectorAll(".tab").forEach(item => item.classList.remove("active"));
-        tab.classList.add("active");
-        activeType = tab.dataset.type;
+      const orderList = content.querySelector("#orderList");
+      if (!list.length) {
+        orderList.innerHTML = `<div class="empty-tip">当前筛选下暂无订单</div>`;
+      } else {
+        orderList.innerHTML = list.map(o => `
+          <article class="order-card" data-id="${o.id}">
+            <div class="order-top"><span>订单编号：${o.id}</span><span>${o.status}</span></div>
+            <div class="order-body">
+              <div class="thumb">🛍️</div>
+              <div>
+                <div class="order-title">${o.title}</div>
+                <div class="order-sub">${o.desc}</div>
+                <div class="state">${o.status}</div>
+              </div>
+            </div>
+            <div class="order-top">
+              <span>数量 x ${o.qty}</span>
+              <span class="price">${money(o.price)}</span>
+            </div>
+          </article>
+        `).join("");
+
+        orderList.querySelectorAll(".order-card").forEach(card => {
+          card.addEventListener("click", () => {
+            currentOrder = orders.find(o => o.id === card.dataset.id);
+            page = "detail";
+            render();
+          });
+        });
+      }
+
+      content.querySelectorAll(".pill").forEach(btn => {
+        btn.addEventListener("click", () => {
+          listFilter = btn.dataset.filter;
+          render();
+        });
+      });
+    }
+
+    function renderDetail() {
+      if (!currentOrder) {
+        page = "orders";
         render();
-      });
-    });
-
-    keywordInput.addEventListener("input", render);
-    statusSelect.addEventListener("change", render);
-
-    document.getElementById("openDrawer").addEventListener("click", () => toggleDrawer(true));
-    document.getElementById("withdrawTopBtn").addEventListener("click", () => toggleDrawer(true));
-    drawerMask.addEventListener("click", () => toggleDrawer(false));
-
-    document.getElementById("saveWithdraw").addEventListener("click", () => {
-      const account = document.getElementById("withdrawAccount").value;
-      const amount = Number(document.getElementById("withdrawAmount").value || 0);
-      const method = document.getElementById("withdrawMethod").value;
-      const remark = document.getElementById("withdrawRemark").value.trim() || "商家货款提现";
-
-      if (!amount) {
-        alert("请输入提现金额");
         return;
       }
 
-      statements.unshift({
-        day: "今天",
-        type: "WITHDRAW",
-        title: method,
-        orderNo: `WD${Date.now().toString().slice(-10)}`,
-        product: `${remark} · ${account}`,
-        buyer: "商家账户",
-        time: "19:41",
-        amount: -Math.abs(amount),
-        commission: 0,
-        freight: 0,
-        status: "WITHDRAWN",
-        statusText: "已提现"
-      });
+      const o = currentOrder;
+      const total = o.price * o.qty;
 
-      document.getElementById("withdrawAmount").value = "";
-      document.getElementById("withdrawRemark").value = "";
-      toggleDrawer(false);
+      content.innerHTML = `
+        <section class="detail-card">
+          <div class="detail-title">收货地址</div>
+          <div class="kv"><div class="k">收货人</div><div class="v">${o.receiver} ${o.phone}</div></div>
+          <div class="kv"><div class="k">地址</div><div class="v">${o.address}</div></div>
+        </section>
+
+        <section class="detail-card">
+          <div class="detail-title">订单信息</div>
+          <div class="kv"><div class="k">订单编号</div><div class="v">${o.id}</div></div>
+          <div class="kv"><div class="k">商品名称</div><div class="v">${o.title}</div></div>
+          <div class="kv"><div class="k">订单状态</div><div class="v">${o.status}</div></div>
+          <div class="kv"><div class="k">数量</div><div class="v">x ${o.qty}</div></div>
+          <div class="divider"></div>
+          <div class="kv"><div class="k">商品总价</div><div class="v">${money(total)}</div></div>
+          <div class="kv"><div class="k">实付款</div><div class="v" style="color:#e66b5d;">${money(total)}</div></div>
+          <div class="kv"><div class="k">付款时间</div><div class="v">${o.payTime}</div></div>
+        </section>
+
+        <section class="detail-card">
+          <div class="detail-title">付款信息</div>
+          <div class="kv"><div class="k">付款人姓名</div><div class="v">${o.payerName}</div></div>
+          <div class="kv"><div class="k">付款银行卡</div><div class="v">${o.payerCard}</div></div>
+          <div class="kv"><div class="k">支付流水号</div><div class="v">${o.payNo}</div></div>
+        </section>
+      `;
+    }
+
+    function render() {
+      backBtn.style.display = page === "mine" ? "none" : "block";
+      topTitle.textContent = page === "mine" ? "我的" : page === "orders" ? "订单列表" : "订单详情";
+
+      if (page === "mine") renderMine();
+      if (page === "orders") renderOrders();
+      if (page === "detail") renderDetail();
+
+      document.querySelectorAll(".tab-btn").forEach(btn => {
+        btn.classList.toggle("active", btn.dataset.tab === "mine");
+      });
+    }
+
+    backBtn.addEventListener("click", () => {
+      if (page === "detail") {
+        page = "orders";
+      } else if (page === "orders") {
+        page = "mine";
+      }
       render();
     });
 
